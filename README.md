@@ -20,7 +20,7 @@ This project aims to develop a system that:
 •	Database: MySQL
 •	Tools: Postman, VS Code, GitHub
 
- 🚀 How to Use (Coming Soon)
-	Instructions for setup and usage will be added once the project is complete.
+🚀 How to Use (Coming Soon)
+	  Instructions for setup and usage will be added once the project is complete.
 
 
