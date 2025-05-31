@@ -1,0 +1,6 @@
+idiot,slang,2
+dumb,slang,3
+fool,slang,1
+abuse,general,3
+bad,general,1
+dummy,slang,1
