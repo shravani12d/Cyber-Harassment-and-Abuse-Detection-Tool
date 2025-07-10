@@ -1,6 +1,6 @@
 # 🛡️ Cyber Harassment and Abuse Detection Tool
 
-A full-stack web application that helps detect and prevent cyber harassment in real time. This tool uses a keyword-based detection system combined with an AI model (optional) to monitor and flag abusive messages in chat environments. A built-in auto-blocking mechanism stops harmful users after repeated offenses.
+An AI-powered full-stack web tool that helps detect and prevent cyber harassment in real time. This tool uses a keyword-based detection system combined with an AI model (optional) to monitor and flag abusive messages in chat environments. A built-in auto-blocking mechanism stops harmful users after repeated offenses.
 
 ---
 
