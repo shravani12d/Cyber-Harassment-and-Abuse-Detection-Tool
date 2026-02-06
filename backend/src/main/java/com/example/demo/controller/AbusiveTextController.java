@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.cyber.AbusiveWord;
+import com.example.demo.model.MessageDTO;
 import com.example.demo.model.AbusiveMessage;
 import com.example.demo.service.AbusiveService;
 
@@ -17,12 +18,16 @@ import java.io.InputStreamReader;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
 @RestController
 @RequestMapping("/abuse")
 public class AbusiveTextController {
-@Autowired
+
+    @Autowired
     private AbusiveService abusiveService;
+
+    @Autowired
+    private RestTemplate restTemplate;
+
     private final List<AbusiveWord> abusiveWords = new ArrayList<>(List.of(
             new AbusiveWord("stupid", "slang", 2),
             new AbusiveWord("idiot", "slang", 2),
@@ -32,7 +37,9 @@ public class AbusiveTextController {
             new AbusiveWord("bad", "general", 1),
             new AbusiveWord("dummy", "slang", 1)
     ));
-    
+
+
+
     @GetMapping("/")
     public String home() {
         return "Welcome to the Cyber Harassment Detection Tool";
@@ -43,6 +50,7 @@ public class AbusiveTextController {
         return "Hello from AbusiveTextController!";
     }
 
+    // ---------------- Abusive word check ----------------
     @PostMapping("/check")
     public ResponseEntity<Object> detectAbuse(@RequestBody Map<String, String> request) {
         String text = request.get("text");
@@ -62,21 +70,20 @@ public class AbusiveTextController {
             }
         }
 
+        Map<String, Object> response = new HashMap<>();
         if (detected.isEmpty()) {
-            Map<String, Object> response = new HashMap<>();
             response.put("abuseDetected", false);
             response.put("message", "No abusive words found.");
-            return ResponseEntity.ok(response);
+        } else {
+            response.put("abuseDetected", true);
+            response.put("matches", detected);
+            response.put("totalSeverity", totalSeverity);
         }
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("abuseDetected", true);
-        response.put("matches", detected);
-        response.put("totalSeverity", totalSeverity);
 
         return ResponseEntity.ok(response);
     }
 
+    // ---------------- Load abusive words from file ----------------
     @PostConstruct
     public void loadAbusiveWords() throws IOException {
         try {
@@ -109,6 +116,7 @@ public class AbusiveTextController {
         return "Abusive words list updated.";
     }
 
+    // ---------------- Admin endpoints ----------------
     @PostMapping("/admin/add-word")
     public ResponseEntity<String> addAbusiveWord(@RequestBody AbusiveWord newWord) {
         abusiveWords.add(newWord);
@@ -124,101 +132,143 @@ public class AbusiveTextController {
     @GetMapping("/admin/list-words")
     public ResponseEntity<List<AbusiveWord>> listAbusiveWords() {
         return ResponseEntity.ok(abusiveWords);
-}
-    @Autowired
-    private RestTemplate restTemplate;
-
-    @PostMapping("/analyze")
-public ResponseEntity<?> analyzeMessage(@RequestBody Map<String, String> request) {
-    String text = request.get("text");
-
-    if (text == null || text.trim().isEmpty()) {
-        return ResponseEntity.badRequest().body("Text input is missing!");
     }
 
-    // Call Flask API
-    String flaskUrl = "http://localhost:5000/abuse/analyze";
+    // ---------------- Analyze message via Flask AI ----------------
+    @PostMapping("/analyze")
+    
+    public ResponseEntity<?> analyzeMessage(@RequestBody MessageDTO request) {
+        String text = request.getText();
+        String senderId = request.getSenderId();
+        String senderName = request.getSenderName();
+        String receiverId = request.getReceiverId();
 
-    try {
-        Map<String, String> flaskRequest = new HashMap<>();
-        flaskRequest.put("text", text);
-
-        // Send to Flask
-        ResponseEntity<Map> flaskResponse = restTemplate.postForEntity(flaskUrl, flaskRequest, Map.class);
-
-        Map<String, Object> data = flaskResponse.getBody();
-        System.out.println("Flask returned:"+data);
-
-        if (data == null) {
-            return ResponseEntity.status(500).body("No response from Flask.");
+        if (text == null || text.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("Text input is missing!");
         }
 
-        // Save to DB
-        AbusiveMessage message = new AbusiveMessage();
-        message.setText(text);
-        message.setAbuseDetected((Boolean) data.get("abuseDetected"));
-        Object labelsObj = data.get("labels");
-    if (labelsObj instanceof List) {
-    List<?> labelList = (List<?>) labelsObj;
-    String joinedLabels = labelList.stream()
-            .map(Object::toString)
-            .collect(Collectors.joining(", "));
-    message.setLabels(joinedLabels);
-} else {
-    message.setLabels(labelsObj != null ? labelsObj.toString():"");
+        String flaskUrl = "http://localhost:5000/abuse/analyze";
+
+        try {
+            Map<String, String> flaskRequest = new HashMap<>();
+            flaskRequest.put("text", text);
+
+            ResponseEntity<Map> flaskResponse = restTemplate.postForEntity(flaskUrl, flaskRequest, Map.class);
+            Map<String, Object> data = flaskResponse.getBody();
+            System.out.println("Flask returned: " + data);
+
+            if (data == null) {
+                return ResponseEntity.status(500).body("No response from Flask.");
+            }
+
+            // Save to DB
+            AbusiveMessage message = new AbusiveMessage();
+            message.setText(text);
+            message.setSenderId(senderId);
+            message.setReceiverId(receiverId);
+            message.setAbuseDetected((Boolean) data.get("abuseDetected"));
+           if ((Boolean) data.get("abuseDetected")) {
+    String severity = "LOW"; // default
+    if (data.get("severity") != null) {
+        severity = data.get("severity").toString();
+    }
+
+    String user = senderId != null ? senderId : "SIMULATED_USER";
+
+    abusiveService.logAbuse(user,text,severity);
 }
-        message.setSeverity((String) data.getOrDefault("severity", ""));
-        Object confidenceObj = data.get("confidence");
-        message.setConfidence(confidenceObj != null? confidenceObj.toString():"");
-        message.setRecommendation((String) data.getOrDefault("recommendation", ""));
 
-        abusiveService.saveText(message);
 
-        return ResponseEntity.ok(data);
 
-    } catch (Exception e) {
-        e.printStackTrace();
-        return ResponseEntity.status(500).body("Error calling Flask API: " + e.getMessage());
- }
-}
-@PostMapping("/simulate")
+            Object labelsObj = data.get("labels");
+            if (labelsObj instanceof List) {
+                List<?> labelList = (List<?>) labelsObj;
+                String joinedLabels = labelList.stream()
+                        .map(Object::toString)
+                        .collect(Collectors.joining(", "));
+                message.setLabels(joinedLabels);
+            } else {
+                message.setLabels(labelsObj != null ? labelsObj.toString() : "");
+            }
+
+            message.setSeverity((String) data.getOrDefault("severity", ""));
+            Object confidenceObj = data.get("confidence");
+            message.setConfidence(confidenceObj != null ? confidenceObj.toString() : "");
+            message.setRecommendation((String) data.getOrDefault("recommendation", ""));
+
+            abusiveService.saveText(message);
+
+            return ResponseEntity.ok(data);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error calling Flask API: " + e.getMessage());
+        }
+    }
+
+
+   @PostMapping("/simulate")
 public ResponseEntity<?> simulateStrangerMessage(@RequestBody Map<String, String> request) {
+
     String userInput = request.get("text");
 
     if (userInput == null || userInput.trim().isEmpty()) {
         return ResponseEntity.badRequest().body("Text input is missing!");
     }
-    String reply;
-    if(userInput.toLowerCase().contains("hi")){
-        reply="What do you want?";} else {
-        reply="You're such a pain.";
-        }
 
-    // Call Flask AI model
+    // Simulated reply
+    String reply = userInput.toLowerCase().contains("hi")
+            ? "What do you want?"
+            : "You're such an idiot";
+
     String flaskUrl = "http://localhost:5000/abuse/analyze";
+
     try {
         Map<String, String> flaskRequest = new HashMap<>();
         flaskRequest.put("text", reply);
 
-        ResponseEntity<Map> flaskResponse = restTemplate.postForEntity(flaskUrl, flaskRequest, Map.class);
+        ResponseEntity<Map> flaskResponse =
+                restTemplate.postForEntity(flaskUrl, flaskRequest, Map.class);
+
         Map<String, Object> flaskData = flaskResponse.getBody();
 
         if (flaskData == null) {
-            return ResponseEntity.status(500).body("No response from Flask.");
+            return ResponseEntity.status(500).body("No response from Flask");
         }
-        boolean abuseDetected= Boolean.parseBoolean(flaskData.get("abuseDetected").toString());
-        List<String> labels=(List<String>) flaskData.get("labels");
-        String severity = flaskData.get("severity").toString();
-        String recommendation= flaskData.get("recommendation").toString();
-        Map<String,Object> response= new HashMap<>();
-        response.put("reply",reply);
-        response.put("abuseDetected",abuseDetected);
-        response.put("labels",labels);
-        response.put("severity",severity);
-        response.put("recommendation",recommendation);
-        return ResponseEntity.ok(response);}
-        catch(Exception e){
-            return ResponseEntity.status(500).body("Error calling Flask API: "+e.getMessage());
-        }}}
-       
-        
+
+        // ✅ DEFINE VARIABLES (FIX)
+        boolean abuseDetected =
+                Boolean.parseBoolean(flaskData.get("abuseDetected").toString());
+
+        String severity =
+                flaskData.get("severity") != null
+                        ? flaskData.get("severity").toString()
+                        : "LOW";
+
+        // ✅ LOG ABUSE
+        if (abuseDetected) {
+            abusiveService.logAbuse(
+                    "SIMULATED_USER",
+                    reply,
+                    severity
+            );
+        }
+
+        // ✅ RESPONSE
+        Map<String, Object> response = new HashMap<>();
+        response.put("reply", reply);
+        response.put("abuseDetected", abuseDetected);
+        response.put("severity", severity);
+        response.put("recommendation",
+                flaskData.getOrDefault("recommendation", "Be cautious"));
+
+        return ResponseEntity.ok(response);
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity
+                .status(500)
+                .body("Error processing simulation message: " + e.getMessage());
+    }
+}
+}

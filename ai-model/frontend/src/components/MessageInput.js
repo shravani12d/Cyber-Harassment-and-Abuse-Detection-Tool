@@ -1,12 +1,11 @@
-import { useState } from 'react';
-const MessageInput = ({ onSend }) => {
-  const [text, setText] = useState("");
+import { useState } from "react";
+
+const MessageInput = ({ onSend, value, setValue }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (text.trim()) {
-      onSend(text.trim());
-      setText("");
+    if (value.trim()) {
+      onSend(value.trim());
     }
   };
 
@@ -15,8 +14,8 @@ const MessageInput = ({ onSend }) => {
       <input
         type="text"
         placeholder="Type your message..."
-        value={text}
-        onChange={(e) => setText(e.target.value)}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
       />
       <button type="submit">Send</button>
     </form>

@@ -1,5 +1,8 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
+import requests
+import csv
+import io
 import pickle
 import re
 import string
@@ -170,6 +173,36 @@ def simulate_reply():
 
     except Exception as e:
         return jsonify({"error": "Simulation failed", "message":str(e)}),500
-    # ✅ Run App
+    
+@app.route('/download_abuse_evidence')
+def download_abuse_evidence():
+    response= requests.get("http://localhost:8080/admin/logs",timeout = 5)
+    data = response.json()
+    if not data:
+        return jsonify({"error": "No abuse evidence found"}), 404
+    si = io.StringIO()
+    cw = csv.DictWriter(si, fieldnames=data[0].keys())
+    cw.writeheader()
+    cw.writerows(data)
+    output = io.BytesIO()
+    output.write(si.getvalue().encode('utf-8'))
+    output.seek(0)
+    return send_file(output, mimetype='text/csv', as_attachment=True, download_name='abuse_evidence.csv')
+
+@app.route('/download_blocked_users')
+def download_blocked_users():
+    response= requests.get("http://localhost:8080/admin/blocked-users",timeout= 5)
+    data = response.json()
+    if not data:
+        return jsonify({"error": "No blocked users found"}), 404
+    si = io.StringIO()
+    cw = csv.DictWriter(si, fieldnames=data[0].keys())
+    cw.writeheader()
+    cw.writerows(data)
+    output = io.BytesIO()
+    output.write(si.getvalue().encode('utf-8'))
+    output.seek(0)
+    return send_file(output, mimetype='text/csv', as_attachment=True, download_name='blocked_users.csv')
+
 if __name__ == "__main__":
     app.run(debug=True)

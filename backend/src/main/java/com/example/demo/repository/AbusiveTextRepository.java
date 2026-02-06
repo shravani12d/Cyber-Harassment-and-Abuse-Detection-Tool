@@ -6,3 +6,4 @@ import org.springframework.stereotype.Repository;
 public interface AbusiveTextRepository extends JpaRepository<AbusiveMessage, Long>{}
     
 
+
