@@ -1,0 +1,8 @@
+.app {
+  max-width: 800px;
+  margin: 40px auto;
+  background-color: var(--bg-card);
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}

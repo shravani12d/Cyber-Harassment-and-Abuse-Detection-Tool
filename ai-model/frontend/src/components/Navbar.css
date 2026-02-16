@@ -1,0 +1,26 @@
+.navbar {
+  height: 75px;
+  display: flex;
+  align-items: center;
+  padding: 0 80px;
+  background: rgba(10, 15, 30, 0.95);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.nav-links {
+  display: flex;
+  gap: 50px;  /* more spacing */
+}
+
+.nav-links a {
+  text-decoration: none;
+  font-size: 2rem;      /* bigger text */
+  font-weight: 700;
+  color: #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: #ffffff;
+  transform: scale(1.05);
+}
