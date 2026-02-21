@@ -1,15 +1,275 @@
-.about-container {
-  max-width: 900px;
+.about-wrapper {
+  font-family: Arial, sans-serif;
+  color: white;
+}
+
+
+.hero {
+  min-height: 80vh;   /* makes section tall */
+  display: flex;
+  align-items: center;   /* vertical center */
+  justify-content: center;
+  padding: 140px 40px;
+  text-align: center;
+
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.8), rgba(0,0,0,0.8)),
+    url("./MyImage.png");
+  background-size: cover;
+  background-position: center;
+
+}
+
+
+
+.hero-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1400px;   /* increase from 1200px */
   margin: auto;
-  padding: 30px;
-  line-height: 1.6;
+  gap: 60px;
 }
 
-.about-container h1,
-.about-container h2 {
-  color: #2c3e50;
+
+.hero-text h1 {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  font-weight: 700;
 }
 
-.about-container ul {
-  padding-left: 20px;
+.hero-text p {
+  font-size: 1.4rem;
+  max-width: 600px;
+  line-height: 1.7;
 }
+
+.hero-image img {
+  width: 600px;        /* increased */
+  max-width: 100%;
+  transform: scale(1.1);  /* slightly zoom */
+}
+
+.hero h1 {
+  font-size: 6rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+  color: #ffffff;
+}
+
+.hero p {
+  font-size: 2.3rem;
+  font-weight: 600;
+  color: #f5f5f5;
+  max-width: 800px;
+  margin: auto;
+  line-height: 1.7;
+}
+
+
+.features {
+  background: #030209;
+  padding: 100px 40px;
+  
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 60px;
+
+  justify-items: center;   /* centers cards */
+}
+
+
+
+
+
+.feature-card {
+  width: 700px;
+  height: 700px;   
+
+  background: linear-gradient(
+  145deg,
+  rgba(30, 41, 59, 0.95),
+  rgba(15, 23, 42, 0.95)
+);
+backdrop-filter: blur(10px);
+
+  border-radius: 22px;
+
+  padding: 50px;
+  text-align: center;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 35;
+  align-items: center;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+
+
+
+
+
+.feature-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 25px 45px rgba(0, 0, 0, 0.15);
+}
+
+
+
+.feature-card h3 {
+  font-size: 2.8rem;
+  font-weight: 700;
+  margin:0;
+  margin-bottom: 20px;
+  line-height: 1.3;
+  text-align: center;
+  min-height: 80;
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+
+
+.feature-card p {
+  font-size: 2.4rem;
+  line-height: 1.7;
+  margin-top: 75px;
+}
+
+
+
+.details,
+.admin-section,
+.objective {
+  background: #0f172a;
+  padding: 140px 80px;
+  text-align: center;
+  color: #ffffff;
+}
+
+/* Section Headings */
+.details h2,
+.admin-section h2,
+.objective h2 {
+  font-size: 6rem;
+  margin-bottom: 80px;
+  font-weight: 800;
+}
+
+/* UL Container */
+.details ul,
+.admin-section ul {
+  max-width: 1500px;
+  margin: 0 auto;
+  list-style: none;
+  padding: 0;
+  text-align: left;
+}
+.details ul,
+.admin-section ul {
+  background: rgba(255,255,255,0.03);
+  padding: 40px 60px;
+  border-radius: 16px;
+}
+
+
+/* Custom Bullet Items */
+.details li,
+.admin-section li {
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 22px;
+  font-size: 2.5rem;
+  line-height: 1.9;
+}
+
+/* Custom Modern Bullet */
+.details li::before,
+.admin-section li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 14px;
+  width: 10px;
+  height: 10px;
+  background: #38bdf8;
+  border-radius: 50%;
+}
+
+
+/* Strong text inside admin section */
+.admin-section strong {
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* Objective paragraph */
+.objective p {
+  font-size: 2.5rem;
+  line-height: 2.2;
+  max-width: 2000px;
+  margin: 60px auto 0;
+
+  background: rgba(255, 255, 255, 0.05);
+  padding: 70px 90px;
+  border-radius: 25px;
+
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+}
+.tech-stack {
+  background: #0f172a;
+  padding: 140px 80px;
+  text-align: center;
+}
+
+.tech-stack h2 {
+  font-size: 3.2rem;
+  margin-bottom: 80px;
+  font-weight: 800;
+}
+
+.tech-grid {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 80px;          
+  flex-wrap: nowrap;  
+}
+
+
+.tech-card {
+  background: rgba(255, 255, 255, 0.04);
+  padding: 50px 30px;
+  border-radius: 20px;
+  transition: 0.3s ease;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+.tech-card:hover {
+  transform: translateY(-12px);
+}
+
+.tech-card img {
+  width: 150px;
+  height: 150px;
+  margin-bottom: 20px;
+}
+
+.tech-card p {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+
+

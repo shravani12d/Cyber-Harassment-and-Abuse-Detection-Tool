@@ -1,0 +1,41 @@
+.message-input {
+  display: flex;
+  align-items: center;
+  padding: 25px 30px;
+  background: #ffffff;
+  border-top: 1px solid #e5e7eb;
+  gap: 15px;
+}
+
+.chat-input {
+  flex: 0.85;
+  padding: 22px 26px;
+  font-size: 40px;     /* 👈 makes typed text big */
+  font-weight: 450;    /* 👈 makes typed text bold */
+  border-radius: 20px;
+  border: 1px solid #ddd;
+  outline: none;
+  resize: none;
+  min-height: 75px;
+}
+
+
+.send-btn {
+ 
+  height: 70px;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(90deg, #4e73df, #9b59b6);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 35px;
+  padding: 0px 35px;
+}
+.chat-input::placeholder {
+  font-size: 40px;
+  font-weight: 400;
+  color: rgb(39, 38, 38);
+}

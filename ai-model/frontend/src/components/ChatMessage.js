@@ -40,7 +40,7 @@ const ChatMessage = ({ message }) => {
         {/* Timestamp + Status (with tick icons) */}
         <div className="message-footer">
           <span className="timestamp">{time}</span>
-        {isUser && status === "seen" &&( <span className ="status seen-tick">✓✓</span>)}
+        {isUser && <span className ="status seen-tick">✓✓</span>}
           
         </div>
       </div>

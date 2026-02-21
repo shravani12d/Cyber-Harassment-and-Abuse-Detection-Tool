@@ -14,7 +14,8 @@ const AbuseLogsTable = () => {
     <div>
       <h3>Abusive Messages</h3>
 
-      <table border="1" width="100%">
+ <table className="admin-table">
+
         <thead>
           <tr>
             <th>User</th>
@@ -22,6 +23,7 @@ const AbuseLogsTable = () => {
             <th>severity</th>
             <th>Date & Time</th>
             <th>Abuse Count</th>
+            <th>Recommended Actions</th>
           </tr>
         </thead>
 
@@ -30,9 +32,29 @@ const AbuseLogsTable = () => {
     <tr key={log.id}>
       <td>{log.userId || "Anonymous"}</td>
       <td>{log.message}</td>
-      <td>{log.severity}</td>
+     <td>
+  <span className={
+    log.severity === "High"
+      ? "badge-high"
+      : log.severity === "Medium"
+      ? "badge-medium"
+      : "badge-low"
+  }>
+    {log.severity}
+  </span>
+</td>
+
       <td>{new Date(log.timestamp).toLocaleString()}</td>
       <td>{log.abuseCountAtTime}</td>
+      <td>
+  {log.abuseCountAtTime >= 3 ? (
+    <span className="action-danger">Recommend Block</span>
+  ) : log.severity === "High" ? (
+    <span className="action-warning">Strong Warning</span>
+  ) : (
+    <span className="action-monitor">Monitor</span>
+  )}
+</td>
     </tr>
   ))}
 </tbody>

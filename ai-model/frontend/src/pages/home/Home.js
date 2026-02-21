@@ -1,36 +1,35 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
+import { ReactTyped } from "react-typed";
+import "./Home.css";
 
 function Home() {
   const navigate = useNavigate();
 
-  const goToChat = () => {
-    navigate("/chat");
-  };
-
   return (
-    <div style={{ textAlign: "center", padding: "2rem" }}>
-      <h1>AI-Powered Cyber Harassment & Abuse Detection Tool</h1>
-      <p>
-        Welcome! Detect abusive, toxic, or threatening messages in real-time
-        and ensure safe conversations.
-      </p>
+    <div className="home-container">
+      <div className="hero-card">
+        <h1>AI-Powered Cyber Harassment & Abuse Detection Tool</h1>
 
-      <button
-        onClick={goToChat}
-        style={{
-          marginTop: "20px",
-          padding: "12px 24px",
-          backgroundColor: "#9b59b6",
-          color: "white",
-          border: "none",
-          borderRadius: "6px",
-          cursor: "pointer",
-          fontSize: "1rem",
-        }}
-      >
-        Start Chat
-      </button>
+        <div className="typing-text">
+          <ReactTyped
+            strings={[
+              "Chat in a safe environment.",
+              "Detect abusive and toxic messages instantly.",
+              "Ensure safer online conversations with AI.",
+            ]}
+            typeSpeed={40}
+            backSpeed={25}
+            loop
+          />
+        </div>
+
+        <button
+          className="primary-btn"
+          onClick={() => navigate("/chat")}
+        >
+          Start Chat
+        </button>
+      </div>
     </div>
   );
 }

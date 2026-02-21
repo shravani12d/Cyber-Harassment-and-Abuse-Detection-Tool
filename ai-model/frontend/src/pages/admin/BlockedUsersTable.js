@@ -14,7 +14,8 @@ const BlockedUsersTable = () => {
     <div>
       <h3>Blocked Users</h3>
 
-      <table border="1" width="100%">
+      <table className="admin-table">
+
         <thead>
           <tr>
             <th>Username</th>
@@ -28,7 +29,7 @@ const BlockedUsersTable = () => {
             <tr key={index}>
               <td>{user.userId}</td>
               <td>{user.abuseCount >=3 ? "Reccuring abusive content": "-"}</td>
-              <td>{user.blockedAt}</td>
+              <td>{new Date(user.blockedAt).toLocaleString()}</td>
             </tr>
           ))}
         </tbody>

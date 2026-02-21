@@ -6,7 +6,8 @@ import com.example.demo.model.BlockedUser;
 import com.example.demo.repository.AbuseLogRepository;
 import com.example.demo.repository.BlockedUserRepository;
 import com.example.demo.repository.AbusiveTextRepository;
-
+import com.example.demo.repository.BlockHistoryRepository;
+import com.example.demo.model.BlockHistory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +24,9 @@ public class AbusiveService {
 
     @Autowired
     private BlockedUserRepository blockedUserRepository;
-
+    
+    @Autowired
+    private BlockHistoryRepository blockHistoryRepository;
     // ✅ 1️⃣ Save analyzed message
     public AbusiveMessage saveText(AbusiveMessage message) {
         return abusiveTextRepository.save(message);
@@ -55,10 +58,24 @@ public class AbusiveService {
         
 
         // Block after 3 abuses
-        if (user.getAbuseCount() >= 3) {
-            user.setBlocked(true);
-            user.setBlockedAt(LocalDateTime.now());
-        }
+       // Block after 3 abuses
+if (user.getAbuseCount() >= 3) {
+
+    // Only log history when user becomes blocked
+    if (!user.isBlocked()) {
+
+        user.setBlocked(true);
+        user.setBlockedAt(LocalDateTime.now());
+
+        BlockHistory history = new BlockHistory(
+                userId,
+                "Exceeded abuse threshold (3)",
+                LocalDateTime.now()
+        );
+
+        blockHistoryRepository.save(history);
+    }
+}
 
         blockedUserRepository.save(user);
     }

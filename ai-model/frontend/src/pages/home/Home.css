@@ -7,40 +7,38 @@
   padding: 20px;
 }
 
-
-
-.hero-card h1 {
-  font-size: 4rem;
-  margin-bottom: 25px;
-  color: #ffffff;
-}
-
-
 .hero-card {
   background: rgba(15, 23, 42, 0.92);
-  padding: 150px 150px;      /* Increased padding */
-  border-radius: 30px;
-  max-width: 1300px;        /* Increased width */
+  padding: 150px 150px;   /* increased more */
+  border-radius: 25px;
+  max-width: 1300px;      /* wider */
   width: 96%;
   text-align: center;
   border: 1px solid rgba(148, 163, 184, 0.3);
   box-shadow: 0 35px 70px rgba(0, 0, 0, 0.85);
 }
 
-
 .typing-text {
-  font-size: 2.5rem;
+  font-size: 3rem;
   color: #cbd5e1;
   margin: 30px 0 40px 0;
   min-height: 40px;
 }
 
 
+.hero-card h1 {
+  font-size: 4rem;
+}
+
+.hero-card p {
+  font-size: 1.5rem;
+}
+
 .primary-btn {
-  padding: 22px 70px;      /* bigger */
-  font-size: 2rem;       /* larger text */
-  font-weight: 700;        /* slightly bold */
-  border-radius: 16px;     /* smoother */
+  padding: 22px 70px;      /* much bigger */
+  font-size: 3rem;       /* larger text */
+  font-weight: 700;        /* strong */
+  border-radius: 16px;     
   border: none;
   background: linear-gradient(135deg, #7c3aed, #6366f1);
   color: white;
@@ -50,7 +48,10 @@
 }
 
 
+
 .primary-btn:hover {
   transform: translateY(-5px) scale(1.05);
-  box-shadow: 0 20px 40px rgba(124, 58, 237, 0.6);
+  box-shadow: 0 20px 40px rgba(124, 58, 237, 0.65);
 }
+
+

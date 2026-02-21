@@ -2,7 +2,7 @@
 const Header =() => {
     return (
         <header>
-        💭Safetalk
+        💭SafeChat
         </header>
     );
 };

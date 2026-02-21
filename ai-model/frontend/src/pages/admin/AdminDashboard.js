@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import AbuseLogsTable from "./AbuseLogsTable";
 import BlockedUsersTable from "./BlockedUsersTable";
-
+import "./Admin.css";
+import {LineChart,Line,XAxis,Tooltip,ResponsiveContainer,} from "recharts";
 
 function AdminDashboard() {
   const [logs, setLogs] = useState([]);
@@ -33,42 +34,123 @@ function AdminDashboard() {
     .then(data => setReport(data))
     .catch(err => console.error(err));
 }, []);
+// ===== Dashboard Calculations =====
 
+const totalIncidents = logs.length;
 
-  return (
-    <div style={{ padding: "20px" }}>
-      <h2>Admin Panel – Abuse Monitoring</h2>
+const highSeverityCount = logs.filter(
+  (log) => log.severity === "High"
+).length;
 
-      {report && (
-        <div style={{ background: "#f4f4f4", padding: "15px", marginBottom: "20px" }}>
-          <h3>📊 Report Summary</h3>
-          <p>Total Abusive Messages: {report.totalAbuseMessages}</p>
-          <p>Blocked Users: {report.blockedUsers}</p>
-          <p>Generated At: {report.generatedAt}</p>
-        </div>
-      )}
-      <div className="report-buttons flex gap-4 mb-4">
-  <button
-    onClick={() => { window.location.href = "http://localhost:5000/download_abuse_evidence"; }}
-    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-  >
-    Download Abuse Evidence
-  </button>
+const blockedCount = blockedUsers.length;
 
-  <button
-    onClick={() => { window.location.href = "http://localhost:5000/download_blocked_users"; }}
-    className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-  >
-    Download Blocked Users
-  </button>
-</div>
-      <h3>Abuse Evidence</h3>
-      <AbuseLogsTable logs={logs}/>
-      
+const recentLogs = logs.slice(0, 5);
 
-      <h3>Blocked users</h3>
-      <BlockedUsersTable users={blockedUsers}/>
+// Trend calculation
+const trendData = logs.reduce((acc, log) => {
+  const date = new Date(log.timestamp).toLocaleDateString();
+
+  const existing = acc.find((item) => item.date === date);
+
+  if (existing) {
+    existing.count += 1;
+  } else {
+    acc.push({ date, count: 1 });
+  }
+
+  return acc;
+}, []);
+
+// Download Abuse Logs
+const downloadAbuseLogs = () => {
+  fetch("http://localhost:5000/download_abuse_evidence")
+    .then(res => {
+      if (!res.ok) throw new Error("No abuse logs found");
+      return res.blob();
+    })
+    .then(blob => {
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "abuse_evidence.csv");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    })
+    .catch(err => alert(err.message));
+};
+
+// Download Blocked Users
+const downloadBlockedUsers = () => {
+  fetch("http://localhost:5000/download_blocked_users")
+    .then(res => {
+      if (!res.ok) throw new Error("No blocked users found");
+      return res.blob();
+    })
+    .then(blob => {
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "blocked_users.csv");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    })
+    .catch(err => alert(err.message));
+};
+return (
+  <div className="dashboard-container">
+    <h2 className="dashboard-title">Admin Dashboard</h2>
+
+    {/* ===== Stats Cards ===== */}
+    <div className="stats-grid">
+      <div className="card blue">
+        <h4>Total Incidents</h4>
+        <h1>{totalIncidents}</h1>
       </div>
-      )};
+
+      <div className="card red">
+        <h4>High Severity</h4>
+        <h1>{highSeverityCount}</h1>
+      </div>
+
+      <div className="card purple">
+        <h4>Blocked Users</h4>
+        <h1>{blockedCount}</h1>
+      </div>
+    </div>
+
+    {/* ===== Trend Graph ===== */}
+    <div className="trend-card">
+      <h3>Abuse Trend (Last 7 Days)</h3>
+
+      <ResponsiveContainer width="100%" height={250}>
+        <LineChart data={trendData}>
+          <XAxis dataKey="date" stroke="#ccc" />
+          <Tooltip />
+          <Line
+            type="monotone"
+            dataKey="count"
+            stroke="#8b5cf6"
+            strokeWidth={3}
+          />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+
+    {/* ===== Recent Flagged Messages ===== */}
+    <div className="table-card">
+      <h3>Recent Flagged Messages</h3>
+      <AbuseLogsTable logs={recentLogs} />
+    </div>
+    <div className="download-card">
+  <h3>Downloads</h3>
+  <button onClick={downloadAbuseLogs}>Download Abuse Logs</button>
+  <button onClick={downloadBlockedUsers}>Download Blocked Users</button>
+</div>
+  </div>
+);
+
+};
 
 export default AdminDashboard;

@@ -1,11 +1,14 @@
 import { Link } from "react-router-dom";
+import "./Navbar.css";
 
 function Navbar() {
   return (
-    <nav style={{ padding: "1rem", backgroundColor: "#282c34" }}>
-      <Link to="/" style={{ color: "white", marginRight: "1rem" }}>Home</Link>
-      <Link to="/about" style={{ color: "white" }}>About</Link>
-    </nav>
+    <div className="navbar">
+      <div className="nav-links">
+        <Link to="/">Home</Link>
+        <Link to="/about">About</Link>
+      </div>
+    </div>
   );
 }
 

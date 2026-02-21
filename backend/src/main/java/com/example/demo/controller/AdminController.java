@@ -7,8 +7,10 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import com.example.demo.model.BlockHistory;
+import com.example.demo.repository.BlockHistoryRepository;
 import com.example.demo.model.AbuseLog;
+import com.example.demo.model.BlockHistory;
 import com.example.demo.model.BlockedUser;
 import com.example.demo.service.AdminService;
 
@@ -19,9 +21,10 @@ public class AdminController {
 
 
     private final AdminService adminService;
-
-    public AdminController(AdminService adminService) {
+    private final BlockHistoryRepository blockHistoryRepository;
+    public AdminController(AdminService adminService,BlockHistoryRepository blockHistoryRepository) {
         this.adminService = adminService;
+        this.blockHistoryRepository = blockHistoryRepository;
     }
 
     @GetMapping("/logs")
@@ -38,4 +41,9 @@ public class AdminController {
     public Map<String, Object> getReport() {
         return adminService.generateReport();
     }
+
+    @GetMapping("/block-history")
+    public List<BlockHistory> getBlockHistory() {
+    return blockHistoryRepository.findAll();
+}
 }

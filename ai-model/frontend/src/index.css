@@ -1,16 +1,18 @@
-:root {
-  --bg-main: radial-gradient(circle at top, #020617, #020617 60%);
-  --bg-card: rgba(15, 23, 42, 0.75);
-  --bg-chat: rgba(2, 6, 23, 0.85);
-
-  --text-main: #e5e7eb;
-  --text-muted: #94a3b8;
-
-  --border-glass: rgba(148, 163, 184, 0.15);
-
-  --danger: #dc2626;
+/* Global Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
+/* Full Black Background */
 body {
-  background: var(--bg-main);
+  background-color: #000000;
+  color: #ffffff;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Smooth Scroll */
+html {
+  scroll-behavior: smooth;
 }

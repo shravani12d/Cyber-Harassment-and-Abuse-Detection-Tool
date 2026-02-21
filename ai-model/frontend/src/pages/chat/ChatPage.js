@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import ChatWindow from "../../components/ChatWindow";
 import MessageInput from "../../components/MessageInput";
 import Popup from "../../components/Popup";
+import "./ChatPage.css";
 
 // ---------------- User ID Helper ----------------
 function getUserId(key) {
@@ -76,17 +77,22 @@ function ChatPage() {
     }
 
     // 👤 USER → HOLD MESSAGE
-    setPendingMessage(text);
-    setInputText("");
+    // 👤 USER → ADD MESSAGE IMMEDIATELY
+const newMessage = { sender: "user", text, time: currentTime };
+setMessages((prev) => [...prev, newMessage]);
+setPendingMessage(text); // keep for abuse popup
+setInputText("");
 
-    await handlePrediction(
-      text,
-      sender,
-      currentTime,
-      senderId,
-      senderName,
-      receiverId
-    );
+// CALL ABUSE DETECTION AFTER SHOWING USER MESSAGE
+await handlePrediction(
+  text,
+  sender,
+  currentTime,
+  senderId,
+  userName,
+  receiverId
+);
+
   };
 
   // ---------------- Handle Prediction ----------------
@@ -170,14 +176,23 @@ function ChatPage() {
 
       // NORMAL FLOW
       // ✅ CLEAN USER MESSAGE → SHOW USER MESSAGE FIRST
-if (sender === "user" && !data.abuseDetected) {
+// FOR USER MESSAGE, SHOW BOT RESPONSE (ABUSE INFO OR CLEAN)
+if (sender === "user") {
   setMessages((prev) => [
     ...prev,
-    { sender: "user", text, time: currentTime },
-    { sender: "bot", text: "✅ Message is clean.", time: currentTime },
+    {
+      sender: "bot",
+      text: data.abuseDetected
+        ? `🔥 Abuse Detected\n🔍 Nature: ${data.labels.join(
+            ", "
+          )}\n⚠️ Severity: ${data.severity}\n🛡️ Recommendation: ⚠️ Avoid abusive language.`
+        : "✅ Message is clean.",
+      time: currentTime,
+    },
   ]);
   return;
 }
+
 
 // 🤖 STRANGER MESSAGE FLOW
 setMessages((prev) => [
@@ -208,107 +223,129 @@ setMessages((prev) => [
     sendMessage(toxicReplies[replyIndex], "other");
     setReplyIndex(replyIndex + 1);
   };
+const handleBlock = () => {
+  if (isStrangerBlocked) return;
+
+  const time = new Date().toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+
+  setIsStrangerBlocked(true);
+
+  setMessages((prev) => [
+    ...prev,
+    {
+      sender: "bot",
+      text: "🚫 User has been blocked.",
+      time,
+    },
+  ]);
+};
+
+const handleUnblock = () => {
+  if (!isStrangerBlocked) return;
+
+  const time = new Date().toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+
+  setIsStrangerBlocked(false);
+
+  setMessages((prev) => [
+    ...prev,
+    {
+      sender: "bot",
+      text: "🔓 User has been unblocked.",
+      time,
+    },
+  ]);
+};
 
   return (
-    <div className="app">
-      <h1>SafeChat 💭 – Cyber Abuse Detection</h1>
+    <div className="chat-layout">
+      
+      <div className="sidebar">
+      <h2>🛡️SafeTalk 💭</h2>
 
-      <ChatWindow messages={messages} isTyping={isTyping} />
+      {!isStrangerBlocked ? (
+        <button onClick={handleBlock} className="block-btn">
+          🚫 Block
+        </button>
+      ) : (
+        <button onClick={handleUnblock} className="unblock-btn">
+          🔓 Unblock
+        </button>
+      )}
 
-      <MessageInput
-        onSend={sendMessage}
-        value={inputText}
-        setValue={setInputText}
-      />
-       <div style={{ marginTop: "10px" }}>
-  {!isStrangerBlocked ? (
-    <button
-      onClick={() => {
-        setIsStrangerBlocked(true);
-        setPopupMessage("");
-        setMessages((prev) => [
-          ...prev,
-          { sender: "bot", text: "🚫 Sender blocked." },
-        ]);
-      }}
-      style={{
-        background: "#e74c3c",
-        color: "#fff",
-        padding: "8px 10px",
-        border: "none",
-        borderRadius: "6px",
-        cursor: "pointer",
-      }}
-    >
-      🚫 Block User
-    </button>
-  ) : (
-    <button
-      onClick={() => {
-        setIsStrangerBlocked(false);
-        setAbuseCount(0);
-        setMessages((prev) => [
-          ...prev,
-          { sender: "bot", text: "🔓 Sender unblocked." },
-        ]);
-      }}
-      style={{
-        background: "#2ecc71",
-        color: "#fff",
-        padding: "8px 12px",
-        border: "none",
-        borderRadius: "6px",
-        cursor: "pointer",
-      }}
-    >
-      🔓 Unblock Sender
-    </button>
-  )}
-</div>
-
-      <button onClick={simulateStrangerReply}>
-        Simulate Sender Message
+      <button onClick={simulateStrangerReply} className="simulate-btn">
+        Simulate Message
       </button>
-
-      {/* Stranger popup */}
-      {popupMessage && (
-        <Popup
-          type="stranger"
-          message={popupMessage}
-          onClose={() => setPopupMessage("")}
-        />
-      )}
-
-      {/* User warning popup */}
-      {showAbuseWarning && (
-        <Popup
-          type="user"
-          message="⚠️ This message looks abusive."
-          onRephrase={() => {
-            setShowAbuseWarning(false);
-            setInputText(pendingMessage);
-          }}
-          onSendAnyway={() => {
-            const time = new Date().toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: true,
-            });
-
-            setMessages((prev) => [
-              ...prev,
-              { sender: "user", text: pendingMessage, time },
-              { sender: "bot", text: pendingRecommendation, time },
-            ]);
-
-            setPendingMessage("");
-            setPendingRecommendation("");
-            setShowAbuseWarning(false);
-          }}
-        />
-      )}
     </div>
-  );
+
+    {/* RIGHT CHAT AREA */}
+    <div className="chat-area">
+
+      <div className="chat-header">
+        Stranger
+      </div>
+
+      <div className="chat-body">
+        <ChatWindow messages={messages} isTyping={isTyping} />
+      </div>
+
+      <div className="chat-footer">
+        <MessageInput
+          onSend={sendMessage}
+          value={inputText}
+          setValue={setInputText}
+        />
+      </div>
+
+    </div>
+
+    {/* KEEP YOUR POPUPS HERE */}
+    {popupMessage && (
+      <Popup
+        type="stranger"
+        message={popupMessage}
+        onClose={() => setPopupMessage("")}
+      />
+    )}
+
+    {showAbuseWarning && (
+      <Popup
+        type="user"
+        message="⚠️ This message looks abusive."
+        onRephrase={() => {
+          setShowAbuseWarning(false);
+          setInputText(pendingMessage);
+        }}
+        onSendAnyway={() => {
+          const time = new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+          });
+
+          setMessages((prev) => [
+            ...prev,
+            { sender: "user", text: pendingMessage, time },
+            { sender: "bot", text: pendingRecommendation, time },
+          ]);
+
+          setPendingMessage("");
+          setPendingRecommendation("");
+          setShowAbuseWarning(false);
+        }}
+      />
+    )}
+
+  </div>
+);
 }
 
 export default ChatPage;
