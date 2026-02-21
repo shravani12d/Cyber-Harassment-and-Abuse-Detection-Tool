@@ -1,6 +1,6 @@
 # 🛡️ SafeTalk — AI-Powered Cyber Harassment & Abuse Detection Tool
 
-SafeTalk is a full-stack web application that uses Artificial Intelligence to detect cyber harassment and abusive language in real-time chat. It provides intelligent intervention, automated safety controls, and a powerful admin panel for monitoring and reporting.
+SafeTalk is a full-stack web based tool that uses Artificial Intelligence to detect cyber harassment and abusive language in real-time chat. It provides intelligent intervention, automated safety controls, and a powerful admin panel for monitoring and reporting.
 
 ---
 
