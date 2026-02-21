@@ -6,9 +6,9 @@ SafeTalk is a full-stack web application that uses Artificial Intelligence to de
 
 ## 🚀 Features
 
-- 🧠 AI-Based Abuse Detection** — Every message is analyzed by an ML model to detect abusive language and harmful intent instantly.
-- ⚡ Real-Time Intervention** — Warning popups let users rephrase or send messages, reducing harmful communication.
-- 🔒 Automatic & Manual Safety Controls** — Users are auto-blocked after 3 abusive messages; manual block/unblock is also available.
+- 🧠 AI-Based Abuse Detection — Every message is analyzed by an ML model to detect abusive language and harmful intent instantly.
+- ⚡ Real-Time Intervention — Warning popups let users rephrase or send messages, reducing harmful communication.
+- 🔒 Automatic & Manual Safety Controls — Users are auto-blocked after 3 abusive messages; manual block/unblock is also available.
 - 🛠️ Admin Panel — Centralized dashboard for monitoring users, reviewing flagged content, and downloading reports.
 
 ---
@@ -140,9 +140,8 @@ CyberHarassmentAbuseDetectionTool/
 ├── demo/
 └── README.md
 
-
-
 ---
+
 ## ⚙️ How It Works
 
 1. A user sends a chat message.
@@ -156,12 +155,14 @@ CyberHarassmentAbuseDetectionTool/
 
 ## 🛠️ Admin Panel
 
-| Feature | Description |
-| Abuse Evidence Management | Stores abusive messages with severity, date, time, count, and user |
-| Blocked Users Table | Displays username, block date, time, and reason |
-| Dashboard Analytics | Shows total abusive messages, blocked users, and report timestamps |
-| Downloadable Reports | Export abuse evidence and blocked user data for analysis |
+## Features
 
+| Feature                  | Description                                                   |
+|--------------------------|---------------------------------------------------------------|
+| Abuse Evidence Management | Stores abusive messages with severity, date, time, count, and user |
+| Blocked Users Table       | Displays username, block date, time, and reason             |
+| Dashboard Analytics       | Shows total abusive messages, blocked users, and report timestamps |
+| Downloadable Reports      | Export abuse evidence and blocked user data for analysis     |
 ---
 
 ## 🎯 Project Objective
