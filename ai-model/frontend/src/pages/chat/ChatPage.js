@@ -35,9 +35,9 @@ function ChatPage() {
   const [inputText, setInputText] = useState("");
 
   const toxicReplies = [
-    "hii loser😒!!",
-    "You will. I saw your pic, and damn.🔥",
-    "Chill! I'm being nice. You act like some celebrity😒",
+    "hii loser!!",
+    "You will. I saw your pic.",
+    "Chill! I'm being nice.",
     "You're just a cheap wannabe.",
     "You look like a witch!! bitch.",
     "Nobody will care about someone like you.",
@@ -65,7 +65,7 @@ function ChatPage() {
       return;
     }
 
-    // 👤 STRANGER → send directly
+  
     if (sender === "other") {
       setIsTyping(true);
       setTimeout(() => {
@@ -77,13 +77,11 @@ function ChatPage() {
     }
 
     // 👤 USER → HOLD MESSAGE
-    // 👤 USER → ADD MESSAGE IMMEDIATELY
-const newMessage = { sender: "user", text, time: currentTime };
-setMessages((prev) => [...prev, newMessage]);
-setPendingMessage(text); // keep for abuse popup
+// 👤 USER → HOLD MESSAGE (DO NOT SEND YET)
+setPendingMessage(text);
 setInputText("");
 
-// CALL ABUSE DETECTION AFTER SHOWING USER MESSAGE
+// Only run abuse detection
 await handlePrediction(
   text,
   sender,
@@ -152,7 +150,7 @@ await handlePrediction(
     },
   ]);
 
-  // optional popup (keep if you want)
+
   setPopupMessage(
     "🚫👤Sender auto-blocked after repeated abusive messages."
   );
@@ -162,7 +160,7 @@ await handlePrediction(
         });
       }
 
-      // ⚠️ USER ABUSE → SHOW POPUP FIRST
+      
       if (data.abuseDetected && sender === "user") {
         setPendingRecommendation(
           `🔥 Abuse Detected
@@ -174,9 +172,7 @@ await handlePrediction(
         return;
       }
 
-      // NORMAL FLOW
-      // ✅ CLEAN USER MESSAGE → SHOW USER MESSAGE FIRST
-// FOR USER MESSAGE, SHOW BOT RESPONSE (ABUSE INFO OR CLEAN)
+     )
 if (sender === "user") {
   setMessages((prev) => [
     ...prev,
@@ -307,7 +303,7 @@ const handleUnblock = () => {
 
     </div>
 
-    {/* KEEP YOUR POPUPS HERE */}
+  
     {popupMessage && (
       <Popup
         type="stranger"
@@ -325,22 +321,22 @@ const handleUnblock = () => {
           setInputText(pendingMessage);
         }}
         onSendAnyway={() => {
-          const time = new Date().toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: true,
-          });
+  const time = new Date().toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
 
-          setMessages((prev) => [
-            ...prev,
-            { sender: "user", text: pendingMessage, time },
-            { sender: "bot", text: pendingRecommendation, time },
-          ]);
+  setMessages((prev) => [
+    ...prev,
+    { sender: "user", text: pendingMessage, time },
+    { sender: "bot", text: pendingRecommendation, time },
+  ]);
 
-          setPendingMessage("");
-          setPendingRecommendation("");
-          setShowAbuseWarning(false);
-        }}
+  setPendingMessage("");
+  setPendingRecommendation("");
+  setShowAbuseWarning(false);
+}}
       />
     )}
 
