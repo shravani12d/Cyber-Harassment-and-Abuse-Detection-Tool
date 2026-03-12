@@ -96,7 +96,9 @@ CyberHarassmentAbuseDetectionTool/
 │   ├── id.py
 │   ├── model.pkl                      # Trained ML model
 │   ├── tfidf_vectorizer.pkl
-│   ├── train_model.py                 # Model training script
+│   ├── train_model.py  # Model training script
+│   ├── evaluate_model.py 
+│   ├── train_bert.py
 │   ├── train.csv                      # Training dataset
 │   ├── uifrontend.code-workspace
 │   └── vectorizer.pkl
