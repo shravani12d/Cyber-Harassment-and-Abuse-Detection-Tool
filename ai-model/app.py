@@ -3,27 +3,28 @@ from flask_cors import CORS
 import requests
 import csv
 import io
-import pickle
 import re
 import string
 import nltk
 import numpy as np
 import random
-
+from transformers import DistilBertForSequenceClassification, DistilBertTokenizerFast
+import torch
 from nltk.corpus import stopwords
 
+# Use full local path to your saved model folder
+MODEL_PATH = r"C:\Users\ASUS\OneDrive\Desktop\CyberHarassmentAbuseDetectionTool\ai-model\saved_model"
+
+# Load model locally only
+model = DistilBertForSequenceClassification.from_pretrained(MODEL_PATH)
+tokenizer = DistilBertTokenizerFast.from_pretrained(MODEL_PATH)
+model.eval()
 nltk.download('stopwords')
 stop_words = set(stopwords.words('english'))
 
 app = Flask(__name__)
 CORS(app)
 
-# Load model and vectorizer
-with open("model.pkl", "rb") as f:
-    model = pickle.load(f)
-
-with open("vectorizer.pkl", "rb") as f:
-    vectorizer = pickle.load(f)
 
 LABELS = ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate']
 
@@ -39,6 +40,28 @@ def clean_text(text):
     words = [word for word in words if word not in stop_words]
     return " ".join(words)
 
+def predict_labels(text):
+    inputs = tokenizer(
+        text,
+        return_tensors="pt",
+        padding=True,
+        truncation=True,
+        max_length=128
+    )
+
+    with torch.no_grad():
+        outputs = model(**inputs)
+        probs = torch.sigmoid(outputs.logits)[0]
+
+    preds = (probs > 0.5).int().tolist()
+
+    labels_detected = [LABELS[i] for i, p in enumerate(preds) if p == 1]
+    abuse_detected = bool(labels_detected)
+
+    confidence_scores = [probs[i].item() for i, p in enumerate(preds) if p == 1]
+    confidence = round(float(np.mean(confidence_scores)), 2) if confidence_scores else 0.0
+
+    return labels_detected, abuse_detected, confidence
 @app.route("/")
 def home():
     return "🚀 Abuse Detection API is running!"
@@ -53,16 +76,7 @@ def analyze():
 
         raw_text = data["text"]
         cleaned = clean_text(raw_text)
-        X = vectorizer.transform([cleaned])
-
-        prediction = model.predict(X)[0]
-        probs = model.predict_proba(X)
-
-        labels_detected = [LABELS[i] for i, p in enumerate(prediction) if p == 1]
-        abuse_detected = bool(labels_detected)
-
-        confidence_scores = [probs[i][0][1] for i in range(len(LABELS)) if prediction[i]==1]
-        confidence = round(float(np.mean(confidence_scores)), 2) if confidence_scores else 0.0
+        labels_detected, abuse_detected, confidence = predict_labels(raw_text)
 
         HIGH_CONFIDENCE_THRESHOLD = 0.8
         LOW_CONFIDENCE_THRESHOLD = 0.5
@@ -134,17 +148,9 @@ def simulate_reply():
             reply = random.choice(fallback_replies)
 
         # Analyze the generated reply using model
-        cleaned = clean_text(reply)
-        X = vectorizer.transform([cleaned])
-        prediction = model.predict(X)[0]
-        probs = model.predict_proba(X)
+        labels_detected, abuse_detected, confidence = predict_labels(reply)
 
-        labels_detected = [LABELS[i] for i, p in enumerate(prediction) if p == 1]
-        abuse_detected = bool(labels_detected)
-
-        confidence_scores = [probs[i][0][1] for i in range(len(LABELS)) if prediction[i] == 1]
-        confidence = round(float(np.mean(confidence_scores)), 2) if confidence_scores else 0.0
-
+        
         # Determine severity and recommendation
         HIGH_CONFIDENCE_THRESHOLD = 0.8
         LOW_CONFIDENCE_THRESHOLD = 0.5
