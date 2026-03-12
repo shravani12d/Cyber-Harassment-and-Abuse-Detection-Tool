@@ -28,7 +28,7 @@ function ChatPage() {
   const [isTyping, setIsTyping] = useState(false);
   const [replyIndex, setReplyIndex] = useState(0);
 
-  // 🔥 Important states
+  //  Important states
   const [showAbuseWarning, setShowAbuseWarning] = useState(false);
   const [pendingRecommendation, setPendingRecommendation] = useState("");
   const [pendingMessage, setPendingMessage] = useState("");
@@ -56,7 +56,7 @@ function ChatPage() {
       hour12: true,
     });
 
-    // 🚫 Blocked stranger
+    //  Blocked stranger
     if (sender === "other" && isStrangerBlocked) {
       setMessages((prev) => [
         ...prev,
@@ -76,8 +76,7 @@ function ChatPage() {
       return;
     }
 
-    // 👤 USER → HOLD MESSAGE
-// 👤 USER → HOLD MESSAGE (DO NOT SEND YET)
+  
 setPendingMessage(text);
 setInputText("");
 
@@ -172,7 +171,7 @@ await handlePrediction(
         return;
       }
 
-     )
+     
 if (sender === "user") {
   setMessages((prev) => [
     ...prev,
@@ -190,7 +189,7 @@ if (sender === "user") {
 }
 
 
-// 🤖 STRANGER MESSAGE FLOW
+//  STRANGER MESSAGE FLOW
 setMessages((prev) => [
   ...prev,
   {
@@ -282,7 +281,7 @@ const handleUnblock = () => {
       </button>
     </div>
 
-    {/* RIGHT CHAT AREA */}
+    
     <div className="chat-area">
 
       <div className="chat-header">
