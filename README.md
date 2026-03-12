@@ -222,7 +222,7 @@ If you find any content offensive, please understand that it has been included s
 
 ## 🎥 Project Demo Video
 Watch the demo here: 
-https://drive.google.com/file/d/15EbJs8HaX0sTTOEAMIm4t_iIlZ9XTTe8/view?usp=sharing
+https://drive.google.com/file/d/1xWIwUONuN5fgr5gGdKc3DrDi4KWFQva6/view?usp=sharing
 
 
 ## 👩‍💻 Developed By
