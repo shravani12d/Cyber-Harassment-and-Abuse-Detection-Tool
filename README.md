@@ -220,6 +220,10 @@ This project uses a dataset that includes terms and phrases commonly associated 
 
 If you find any content offensive, please understand that it has been included strictly for the development of a safety-focused AI system.
 
+## 🎥 Project Demo Video
+Watch the demo here: 
+https://drive.google.com/file/d/15EbJs8HaX0sTTOEAMIm4t_iIlZ9XTTe8/view?usp=sharing
+
 
 ## 👩‍💻 Developed By
 
