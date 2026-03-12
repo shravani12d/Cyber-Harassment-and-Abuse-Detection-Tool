@@ -26,7 +26,7 @@ SafeTalk is a full-stack web based tool that uses Artificial Intelligence to det
 
 ## 📁 Folder Structure
 
-
+```
 CyberHarassmentAbuseDetectionTool/
 │
 ├── .vscode/
@@ -98,7 +98,7 @@ CyberHarassmentAbuseDetectionTool/
 │   ├── tfidf_vectorizer.pkl
 │   ├── train_model.py  # Model training script
 │   ├── evaluate_model.py 
-│   ├── train_bert.py
+│   ├── train_bert.py                  # Trained bert model
 │   ├── train.csv                      # Training dataset
 │   ├── uifrontend.code-workspace
 │   └── vectorizer.pkl
@@ -141,8 +141,7 @@ CyberHarassmentAbuseDetectionTool/
 │
 ├── demo/
 └── README.md
-
----
+```
 
 ## ⚙️ How It Works
 
