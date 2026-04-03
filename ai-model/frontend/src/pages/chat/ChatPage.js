@@ -176,14 +176,20 @@ if (sender === "user") {
   setMessages((prev) => [
     ...prev,
     {
-      sender: "bot",
-      text: data.abuseDetected
-        ? `🔥 Abuse Detected\n🔍 Nature: ${data.labels.join(
-            ", "
-          )}\n⚠️ Severity: ${data.severity}\n🛡️ Recommendation: ⚠️ Avoid abusive language.`
-        : "✅ Message is clean.",
+      sender: "user",
+      text: text,
       time: currentTime,
     },
+    ...(data.abuseDetected
+      ? [{
+          sender: "bot",
+          text: `🔥 Abuse Detected
+🔍 Nature: ${data.labels.join(", ")}
+⚠️ Severity: ${data.severity}
+🛡️ Recommendation: ⚠️ Avoid abusive language.`,
+          time: currentTime,
+        }]
+      : []),
   ]);
   return;
 }
