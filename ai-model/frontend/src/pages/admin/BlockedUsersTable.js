@@ -28,7 +28,7 @@ const BlockedUsersTable = () => {
           {users.map((user, index) => (
             <tr key={index}>
               <td>{user.userId}</td>
-              <td>{user.abuseCount >=3 ? "Reccuring abusive content": "-"}</td>
+              <td>{user.abuseCount >=3 ? "Recurring abusive content": "-"}</td>
               <td>{new Date(user.blockedAt).toLocaleString()}</td>
             </tr>
           ))}
