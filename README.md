@@ -6,7 +6,7 @@ SafeTalk is a full-stack web based tool that uses Artificial Intelligence to det
 
 ## 🚀 Features
 
-- 🧠 AI-Based Abuse Detection — Every message is analyzed by an ML model to detect abusive language and harmful intent instantly.
+- 🧠 AI-Based Abuse Detection — Every message is analyzed by an ML model (powered by DistilBERT) to detect abusive language and harmful intent instantly.
 - ⚡ Real-Time Intervention — Warning popups let users rephrase or send messages, reducing harmful communication.
 - 🔒 Automatic & Manual Safety Controls — Users are auto-blocked after 3 abusive messages; manual block/unblock is also available.
 - 🛠️ Admin Panel — Centralized dashboard for monitoring users, reviewing flagged content, and downloading reports.
@@ -18,7 +18,7 @@ SafeTalk is a full-stack web based tool that uses Artificial Intelligence to det
 | Layer | Technology |
 |---|---|
 | Backend | Java, Spring Boot |
-| AI Model | Python, Flask |
+| AI Model | Python, Flask, DistilBERT |
 | Frontend | ReactJS |
 | Database | MySQL |
 
@@ -98,7 +98,7 @@ CyberHarassmentAbuseDetectionTool/
 │   ├── tfidf_vectorizer.pkl
 │   ├── train_model.py  # Model training script
 │   ├── evaluate_model.py 
-│   ├── train_bert.py                  # Trained bert model
+│   ├── train_bert.py                  # DistilBERT fine-tuning script
 │   ├── train.csv                      # Training dataset
 │   ├── uifrontend.code-workspace
 │   └── vectorizer.pkl
