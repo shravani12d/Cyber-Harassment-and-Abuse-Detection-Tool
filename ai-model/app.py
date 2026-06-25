@@ -12,10 +12,10 @@ from transformers import DistilBertForSequenceClassification, DistilBertTokenize
 import torch
 from nltk.corpus import stopwords
 
-# Use full local path to your saved model folder
+
 MODEL_PATH = r"C:\Users\ASUS\OneDrive\Desktop\CyberHarassmentAbuseDetectionTool\ai-model\saved_model"
 
-# Load model locally only
+
 model = DistilBertForSequenceClassification.from_pretrained(MODEL_PATH)
 tokenizer = DistilBertTokenizerFast.from_pretrained(MODEL_PATH)
 model.eval()
@@ -28,6 +28,36 @@ CORS(app)
 
 LABELS = ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate']
 
+SEXUAL_KEYWORDS = [
+    "nude",
+    "nudes",
+    "send nudes",
+    "send me pictures",
+    "send pics",
+    "send photos",
+    "show me your body",
+    "sexy body",
+    "sleep with you",
+    "have sex",
+    "hook up",
+    "kiss me",
+    "hot babe",
+    "hot girl",
+    "come to my room",
+    "you look so hot",
+    "you are hot",
+    "you're hot",
+    "come over tonight"
+]
+
+def detect_sexual_harassment(text):
+    text = text.lower()
+
+    for keyword in SEXUAL_KEYWORDS:
+        if keyword in text:
+            return True
+
+    return False
 # Text cleaner
 def clean_text(text):
     text = text.lower()
@@ -56,6 +86,12 @@ def predict_labels(text):
     preds = (probs > 0.5).int().tolist()
 
     labels_detected = [LABELS[i] for i, p in enumerate(preds) if p == 1]
+
+    if detect_sexual_harassment(text):
+        labels_detected.append("sexual_harassment")
+
+    labels_detected = list(set(labels_detected))
+
     abuse_detected = bool(labels_detected)
 
     confidence_scores = [probs[i].item() for i, p in enumerate(preds) if p == 1]
@@ -81,19 +117,36 @@ def analyze():
         HIGH_CONFIDENCE_THRESHOLD = 0.8
         LOW_CONFIDENCE_THRESHOLD = 0.5
 
-        if not labels_detected or confidence < LOW_CONFIDENCE_THRESHOLD:
-            severity = "Not Abusive"
-            recommendation = "No action needed."
-        elif confidence >= HIGH_CONFIDENCE_THRESHOLD:
-            severity = "High"
-            recommendation = "Immediately report and block the user."
-        elif any(label in labels_detected for label in ["severe_toxic", "threat", "identity_hate"]):
-            severity = "High"
-            recommendation = "Immediately report and block the user."
-        elif any(label in labels_detected for label in ["toxic", "obscene", "insult"]):
-            severity = "Medium"
-            recommendation = "Warn the user or report if repeated."
+        if not labels_detected:
+             severity = "Not Abusive"
+             recommendation = "No action needed."
 
+        elif "sexual_harassment" in labels_detected:
+             severity = "High"
+             recommendation = "Immediately report and block the user."
+
+        elif confidence < LOW_CONFIDENCE_THRESHOLD:
+             severity = "Not Abusive"
+             recommendation = "No action needed."
+
+        elif confidence >= HIGH_CONFIDENCE_THRESHOLD:
+             severity = "High"
+             recommendation = "Immediately report and block the user."
+
+        elif any(label in labels_detected for label in [
+    "severe_toxic",
+    "threat",
+    "identity_hate"
+]):
+         severity = "High"
+         recommendation = "Immediately report and block the user."
+
+        elif any(label in labels_detected for label in ["toxic", "obscene", "insult"]):
+          severity = "Medium"
+          recommendation = "Warn the user or report if repeated."
+        else:
+          severity = "Not Abusive"
+          recommendation = "No action needed."
         return jsonify({
             "input": raw_text,
             "cleaned": cleaned,
@@ -107,7 +160,7 @@ def analyze():
     except Exception as e:
         return jsonify({"error": "Internal server error", "message": str(e)}), 500
 
-# 🤖 Stranger Reply Simulation
+# Stranger Reply Simulation
 @app.route("/abuse/simulate", methods=["POST"])
 def simulate_reply():
     try:
@@ -147,7 +200,7 @@ def simulate_reply():
             ]
             reply = random.choice(fallback_replies)
 
-        # Analyze the generated reply using model
+        # Analyzing the generated reply using model
         labels_detected, abuse_detected, confidence = predict_labels(reply)
 
         
@@ -155,18 +208,35 @@ def simulate_reply():
         HIGH_CONFIDENCE_THRESHOLD = 0.8
         LOW_CONFIDENCE_THRESHOLD = 0.5
 
-        if not labels_detected or confidence < LOW_CONFIDENCE_THRESHOLD:
-            severity = "Not Abusive"
-            recommendation = "No action needed."
+        if not labels_detected:
+          severity = "Not Abusive"
+          recommendation = "No action needed."
+
+        elif "sexual_harassment" in labels_detected:
+          severity = "High"
+          recommendation = "Immediately report and block the user."
+
+        elif confidence < LOW_CONFIDENCE_THRESHOLD:
+          severity = "Not Abusive"
+          recommendation = "No action needed."
+
         elif confidence >= HIGH_CONFIDENCE_THRESHOLD:
             severity = "High"
             recommendation = "Immediately report and block the user."
-        elif any(label in labels_detected for label in ["severe_toxic", "obscene", "threat", "identity_hate"]):
+        elif any(label in labels_detected for label in [
+             "severe_toxic",
+             "obscene",
+             "threat",
+             "identity_hate"
+]):
             severity = "High"
             recommendation = "Immediately report and block the user."
         elif any(label in labels_detected for label in ["toxic", "insult"]):
             severity = "Medium"
             recommendation = "Warn the user or report if repeated."
+        else:
+            severity = "Not Abusive"
+            recommendation = "No action needed."
 
         return jsonify({
             "reply": reply,
