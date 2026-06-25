@@ -150,7 +150,7 @@ CyberHarassmentAbuseDetectionTool/
 3. If abuse is detected, a **warning popup** appears giving the user options to **Rephrase** or **Send Anyway**.
 4. Alerts and safety recommendations are generated in real time.
 5. After 3 abusive messages, the offending user is automatically blocked.
-6. Users and admins also have **manual block/unblock controls.
+6. Users and admins also have **manual block/unblock controls**.
 
 ---
 
